@@ -8,4 +8,10 @@ stubs:
 	       	--go-grpc_opt=paths=source_relative\
 		$(PROTO_DIR)/*.proto
 
-.PHONY: stubs
+build:
+	go build cmd/main.go
+
+test:
+	go test ./...
+
+.PHONY: stubs build test
