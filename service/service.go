@@ -29,8 +29,8 @@ func (s *FileService) SaveFile(
 	s.saveControl.Acquire()
 	defer s.saveControl.Release()
 
-	err := s.mgr.SaveFile(dir, req.File)
-	return &pb.SaveFileResponse{}, err
+	name, err := s.mgr.SaveFile(dir, req.File)
+	return &pb.SaveFileResponse{Name: name}, err
 }
 
 func (s *FileService) ListFiles(

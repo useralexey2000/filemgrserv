@@ -37,14 +37,19 @@ func New(namer Namer) *DefaultFileManager {
 	}
 }
 
-func (d *DefaultFileManager) SaveFile(dir string, bs []byte) error {
-	name := d.namer.CreateName()
+func (d *DefaultFileManager) SaveFile(dir string, bs []byte) (string, error) {
 	ext, err := d.fileExtention(bs)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return os.WriteFile(filepath.Join(dir, fmt.Sprint(name, ".", ext)), bs, 0666)
+	name := fmt.Sprint(d.namer.CreateName(), ".", ext)
+	err = os.WriteFile(filepath.Join(dir, name), bs, 0666)
+	if err != nil {
+		return "", err
+	}
+
+	return name, nil
 }
 
 func (d *DefaultFileManager) ListFilesInfo(

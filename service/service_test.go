@@ -24,14 +24,14 @@ type fakeManager struct {
 	wg      *sync.WaitGroup
 }
 
-func (m *fakeManager) SaveFile(dir string, bs []byte) error {
+func (m *fakeManager) SaveFile(dir string, bs []byte) (string, error) {
 	m.wg.Add(1)
 	defer m.wg.Done()
 
 	m.counter++
 	time.Sleep(1 * time.Millisecond)
 	m.counter--
-	return nil
+	return "", nil
 }
 
 func (m *fakeManager) ListFilesInfo(dir string, limit, offset int) ([]*domain.FileInfo, error) {
@@ -52,7 +52,7 @@ func TestSaveFile(t *testing.T) {
 
 	s := NewFileServiceClient(filemanager.New(&fakeNamer{}), 1, 1)
 
-	_, err = s.SaveFile(context.Background(), &pb.SaveFileRequest{
+	res, err := s.SaveFile(context.Background(), &pb.SaveFileRequest{
 		File: bs,
 	})
 
@@ -62,6 +62,10 @@ func TestSaveFile(t *testing.T) {
 
 	if _, err := os.Stat(dir + "/fake.png"); errors.Is(err, os.ErrNotExist) {
 		t.Errorf("no file found error %v", err)
+	}
+
+	if res.Name != "fake.png" {
+		t.Errorf("not correct filename, want: %v, got: %v", "fake.png", res.Name)
 	}
 
 	os.Remove(dir + "/fake.png")

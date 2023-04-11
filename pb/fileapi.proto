@@ -16,7 +16,9 @@ message SaveFileRequest {
     bytes file = 1;
 }
 
-message SaveFileResponse{}
+message SaveFileResponse{
+    string name = 1;
+}
 
 message ListFilesRequest{
     int32 offset = 1;
